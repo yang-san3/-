@@ -1,0 +1,5 @@
+onnxruntime中的输入必须为numpy,需要将ST-GCN的两个分支输入由tensor转化为numpy
+pts = pts.numpy()
+mot = mot.numpy()
+多输入时，可以按下列方式写，一定注意onnxruntime和onnx的输入输出的个数及名称必须一一对应。
+ort_inputs = {'pts': pts, 'mot': mot}
