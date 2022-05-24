@@ -1,0 +1,17 @@
+# 在转ONNX过程中遇到下列错误提示
+# RuntimeError: Failed to export an ONNX attribute 'onnx::Gather', since it's not constant, please try to make things (e.g., kernel size) static if possible
+# 原因是某个op的属性值不是常量，一般都是avg_pool2d的问题。解决如下：
+# 在forward函数中.   height与 width的类型会变成 torch.tensor, 使得转换报错，所以需要在转换前加上两行代码:
+for gcn, importance in zip(self.st_gcn_networks, self.edge_importance):
+    x = gcn(x, self.A * importance)
+# x(1, 256, 8, 14)
+batch, channels, height, width = x.size()
+if torch.is_tensor(height):
+  height = height.item()  # 这里是修正代码
+  width = width.item()  # 这里是修正代码
+x = F.avg_pool2d(x, kernel_size=[height, width])
+x = self.cls(x)
+x = x.view(x.size(0), -1)
+
+return x
+
