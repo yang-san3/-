@@ -1,0 +1,13 @@
+尽量不要出现tensor转为numpy或者python的数据类型：打个比方，pytorch的主角是tensor，在转为onnx的时候，pytorch会根据tensor的流向去构建onnx。
+一旦tensor的流向中断，onnx就会出现警告或者报错。那么什么时候tensor的流向会中断呢？就是在进行数据类型转换的时候。
+因此不要把tensor转换为numpy或者python的int，float等类型，更不要把tensor转换成列表。
+
+tensor不要和python的数据类型直接做运算：
+
+不要使用tensor的广播机制，因为DNN不支持：（这一点主要是为了让DNN正确加载onnx，不遵守这一条不会导致转onnx出问题。
+
+DNN不支持torch.arange()，torch.squeeze()，torch.exp()
+
+不要对切片进行赋值操作：onnx不支持对切片进行赋值操作，因此要避免使用。
+
+onnx支持多输入多输出：onnx支持模型有多个输入和输出。
